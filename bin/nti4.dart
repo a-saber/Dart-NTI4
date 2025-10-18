@@ -1,8 +1,12 @@
 import 'dart:io';
-
+import 'oop.dart';
 void main() 
 {
-  List<Map<String, Map<String, dynamic>>> invoices = [];
+  Shape s1 = Shape();
+  Shape s2 = Shape();
+  print(s1==s2);
+
+    List<Map<String, Map<String, dynamic>>> invoices = [];
   List<Map<String, dynamic>> products = [];
   while(true){
     displayOptions();
@@ -137,3 +141,24 @@ dynamic handleInput({String prompt = "Enter Value:", dynamic Function(String)? c
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

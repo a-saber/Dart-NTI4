@@ -1,38 +1,67 @@
-
-class Person
-{
+enum CarBrands { Toyota, Ford, BMW }
+ 
+ abstract class Animal{
   String? name;
-  int? age;
+  Animal(this.name);
+  void makeSound();
+  void sleep(){}
+}
+class Cat implements Animal {
+  @override
+  String? name;
 
-  Person( {this.age, this.name,});
-  Person.fromMap(Map<String, dynamic> data)
-  {
-    this.name = data['name'];
-    this.age = data['age'];
+  Cat({this.name});
+  @override
+  void makeSound() {
+    
   }
-  Person.from(Person source)
-  {
-    this.name = source.name;
-    this.age = source.age;
+  @override
+  void sleep() {
+    
   }
-  void displayInfo(){
-    print('Name: $name, Age: $age');
+
+  
+
+}
+class Dog extends Animal {
+  Dog(super.name);
+
+  @override
+  void makeSound() {
+    print("Bark");
   }
 }
+test(CarBrands car){
 
+  switch(car)
+  {
+    case CarBrands.BMW:
+      print("BMW selected");
+      break;
+    case CarBrands.Ford:
+      print("Ford selected");
+      break;
+    case CarBrands.Toyota:
+      print("Toyota selected");
+      break;
+  }
+}
 void main(){
-Map<String, dynamic>  x= {
-  "name": "Ahmed",
-  "age": 25
-};
-  Person p1 = Person(age: 30, name: "Mohamed");
-  Person p2 = Person.fromMap(x);
+  // test(Animal());
+  // test(Cat());
+  // test(Dog());
+  
+}
 
-  Person p3 = Person.from(p2);
-  p3.name = "Ali";
-
-  p1.displayInfo();
-  p2.displayInfo();
-  p3.displayInfo();
-  print(p1 is Person);
+class Shape
+{
+  Shape._internal();
+  static Shape _instance = Shape._internal();
+  factory Shape(){
+    return _instance;
+  }
+  void displayInfo()
+  {
+    print("This is a shape");
+  }
 }
