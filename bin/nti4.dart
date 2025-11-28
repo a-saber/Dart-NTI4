@@ -1,146 +1,142 @@
-import 'dart:io';
-import 'oop.dart';
-void main() 
-{
-  Shape s1 = Shape();
-  Shape s2 = Shape();
-  print(s1==s2);
 
-    List<Map<String, Map<String, dynamic>>> invoices = [];
-  List<Map<String, dynamic>> products = [];
-  while(true){
-    displayOptions();
-    int option = handleInput(
-      prompt: "Enter Option Number (1-6):",
-      casting: (String input)
-      {
-        int value= int.tryParse(input)??0;
-        return (value >=1 && value <=6)? value : null;    
-      }
-    );
+import 'package:dio/dio.dart';
+class GetTopHeadLinesResponse {
+  String? status;
+  int? totalResults;
+  List<Articles>? articles;
 
-    switch (option) {
-      case 1:
-        // Add New Product
-        addProduct(products);
+  GetTopHeadLinesResponse({this.status, this.totalResults, this.articles});
 
-      case 2:
-      // show products with quantity > 0
-      for(var product in products)
-      {
-        if(product['quantity'] > 0)
-        {
-          print("${product['name']} \$${product['price']} , Qty: ${product['quantity']}");
-        }
-      }
+  GetTopHeadLinesResponse.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    totalResults = json['totalResults'];
+    if (json['articles'] != null) {
+      articles = <Articles>[];
+      json['articles'].forEach((v) {
+        articles!.add(new Articles.fromJson(v));
+      });
+    }
+  }
 
-      case 3:
-      // update product
-      updateProduct(products);
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['totalResults'] = this.totalResults;
+    if (this.articles != null) {
+      data['articles'] = this.articles!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
 
+class Articles {
+  Source? source;
+  String? author;
+  String? title;
+  String? description;
+  String? url;
+  String? urlToImage;
+  String? publishedAt;
+  String? content;
 
+  Articles(
+      {this.source,
+      this.author,
+      this.title,
+      this.description,
+      this.url,
+      this.urlToImage,
+      this.publishedAt,
+      this.content});
 
-      case 6:
-        // Exit
-        print('Exiting Inventory Management System. Goodbye!');
-        return;
-    } 
+  Articles.fromJson(Map<String, dynamic> json) {
+    source =
+        json['source'] != null ? new Source.fromJson(json['source']) : null;
+    author = json['author'];
+    title = json['title'];
+    description = json['description'];
+    url = json['url'];
+    urlToImage = json['urlToImage'];
+    publishedAt = json['publishedAt'];
+    content = json['content'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.source != null) {
+      data['source'] = this.source!.toJson();
+    }
+    data['author'] = this.author;
+    data['title'] = this.title;
+    data['description'] = this.description;
+    data['url'] = this.url;
+    data['urlToImage'] = this.urlToImage;
+    data['publishedAt'] = this.publishedAt;
+    data['content'] = this.content;
+    return data;
+  }
+}
+
+class Source {
+  String? id;
+  String? name;
+
+  Source({this.id, this.name});
+
+  Source.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    return data;
+  }
+}
+
+void main() async {
+  Dio dio = Dio();
+try{  
+  var response = await dio.get(
+    'https://newsapi.org/v2/top-headlines',
+    queryParameters: {
+      'apiKey': '836086f05b344448a16dd41ee51c6320',
+      'q': 'we'
+    }
+  );
+  var responseData = response.data as Map<String, dynamic>;
+  GetTopHeadLinesResponse responseModel = GetTopHeadLinesResponse.fromJson(responseData);
+ 
+  print('title 1: ${responseModel.articles?[0].title}');
+  }
+  catch(e){
+    if(e is DioException){
+      print(e.response.toString());
+    }
+    print("Error occurred: $e");
   }
 
 
-  // String name = handleInput();
-  // double price = handleInput((String input){
-  //   double value = double.tryParse(input)??0;
-  //   return (value>0) ? value : null;
-  // });
-  // print(input);
+  
 
-}
-void updateProduct(List<Map<String, dynamic>> products)
-{
-      // input produt index
-    int productIndex =handleInput(
-      prompt: "Enter Product Number",
-      casting: (String input)
-      {
-        int value = int.tryParse(input)??-1;
-        return (value >=0 && value < products.length)? value-1 : null;
-      }
-    );
-      
-          int productQuantity = handleInput(
-        prompt: "Enter Product Quantity:",
-        casting: (String input)
-        {
-          int value = int.tryParse(input)??0;
-          return (value>0) ? value : null;
-        }
-      );
-      products[productIndex]['quantity'] = productQuantity;
-}
-void addProduct(List<Map<String, dynamic>> products)
-{
-      String productName = handleInput(prompt: "Enter Product Name:");
-    double productPrice = handleInput(
-      prompt: "Enter Product Price:",
-      casting: (String input)
-      {
-        double value = double.tryParse(input)??0;
-        return (value>0) ? value : null;
-      }
-    );
-    int productQuantity = handleInput(
-      prompt: "Enter Product Quantity:",
-      casting: (String input)
-      {
-        int value = int.tryParse(input)??0;
-        return (value>0) ? value : null;
-      }
-    );
-    // add to products list
-    products.add({
-      'name': productName,
-      'price': productPrice,
-      'quantity': productQuantity
-    });
-}
-void displayOptions()
-{
-  print('''
---- Inventory Management System ---
-Welcome to the Inventory Management System!
-Options:
-1. Add New Product
-2. Show Products
-3. Update Product
-4. Purchase Products
-5. Show Invoices
-6. Exit
-
-''');
 }
 
 
-dynamic handleInput({String prompt = "Enter Value:", dynamic Function(String)? casting}) {
-  print(prompt);
-  while(true){
-    String input = stdin.readLineSync()??'';
-    if(input.isEmpty){
-      print('Invalid input. Please try again.');
-    }
-    else
-    {
-      var castedValue = casting==null? input : casting(input);
-      if(castedValue == null)
-      {
-        print('Invalid input. Please try again.');
-      }
-      else{
-        return castedValue;
-      }
-    }
-  }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

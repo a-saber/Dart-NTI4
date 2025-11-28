@@ -9,6 +9,8 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  dio:
+  decimal:
   # path: ^1.8.0
 
 dev_dependencies:
