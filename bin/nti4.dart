@@ -1,19 +1,44 @@
 
 import 'package:dio/dio.dart';
-class GetTopHeadLinesResponse {
+
+void main() async {
+  Dio dio = Dio();
+try{  
+  var response = await dio.get(
+    'https://newsapi.org/v2/top-headlines',
+    queryParameters: {
+      'apiKey': '836086f05b344448a16dd41ee51c6320',
+      'q': 'we'
+    }
+  );
+  
+  var responseData = response.data as Map<String, dynamic>;
+  NewsResponseModel newsResponse = 
+  NewsResponseModel.fromJson(responseData);
+  print(newsResponse.status);
+  newsResponse.articles;
+  }
+  catch(e){
+    if(e is DioException){
+      print(e.response.toString());
+    }
+    print("Error occurred: $e");
+  }
+}
+class NewsResponseModel {
   String? status;
   int? totalResults;
-  List<Articles>? articles;
+  List<ArticleModel>? articles;
 
-  GetTopHeadLinesResponse({this.status, this.totalResults, this.articles});
+  NewsResponseModel({this.status, this.totalResults, this.articles});
 
-  GetTopHeadLinesResponse.fromJson(Map<String, dynamic> json) {
+  NewsResponseModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     totalResults = json['totalResults'];
     if (json['articles'] != null) {
-      articles = <Articles>[];
+      articles = <ArticleModel>[];
       json['articles'].forEach((v) {
-        articles!.add(new Articles.fromJson(v));
+        articles!.add(new ArticleModel.fromJson(v));
       });
     }
   }
@@ -29,7 +54,7 @@ class GetTopHeadLinesResponse {
   }
 }
 
-class Articles {
+class ArticleModel {
   Source? source;
   String? author;
   String? title;
@@ -39,7 +64,7 @@ class Articles {
   String? publishedAt;
   String? content;
 
-  Articles(
+  ArticleModel(
       {this.source,
       this.author,
       this.title,
@@ -49,7 +74,7 @@ class Articles {
       this.publishedAt,
       this.content});
 
-  Articles.fromJson(Map<String, dynamic> json) {
+  ArticleModel.fromJson(Map<String, dynamic> json) {
     source =
         json['source'] != null ? new Source.fromJson(json['source']) : null;
     author = json['author'];
@@ -95,39 +120,6 @@ class Source {
     return data;
   }
 }
-
-void main() async {
-  Dio dio = Dio();
-try{  
-  var response = await dio.get(
-    'https://newsapi.org/v2/top-headlines',
-    queryParameters: {
-      'apiKey': '836086f05b344448a16dd41ee51c6320',
-      'q': 'we'
-    }
-  );
-  var responseData = response.data as Map<String, dynamic>;
-  GetTopHeadLinesResponse responseModel = GetTopHeadLinesResponse.fromJson(responseData);
- 
-  print('title 1: ${responseModel.articles?[0].title}');
-  }
-  catch(e){
-    if(e is DioException){
-      print(e.response.toString());
-    }
-    print("Error occurred: $e");
-  }
-
-
-  
-
-}
-
-
-
-
-
-
 
 
 
